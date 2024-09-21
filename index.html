@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/vega@5.30.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.20.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.26.0"></script>
+</head>
+<body>
+  <div id="vis"/>
+  <script>
+    const spec = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "AI Index: Infrastructure and Development",
+  "width": 1000,
+  "height": 900,
+  "background": "#e0f7fa",
+  "layer": [
+    {
+      "projection": {"type": "mercator"},
+      "data": {
+        "url": "https://raw.githubusercontent.com/qqia0005/visualization-week9/main/ne_110m_admin_0_countries.json",
+        "format": {"type": "topojson", "feature": "ne_110m_admin_0_countries"}
+      },
+      "transform": [
+        {
+          "lookup": "properties.NAME",
+          "from": {
+            "data": {
+              "url": "https://raw.githubusercontent.com/qqia0005/visualization-week9/main/AI_index_db.csv"
+            },
+            "key": "Country",
+            "fields": ["Infrastructure", "Development"]
+          }
+        },
+        {
+          "calculate": "datum.Infrastructure / 100",
+          "as": "NormalizedInfrastructure"
+        }
+      ],
+      "mark": {"type": "geoshape"},
+      "encoding": {
+        "color": {
+          "field": "NormalizedInfrastructure",
+          "type": "quantitative",
+          "scale": {"type": "linear"}
+        },
+        "tooltip": [
+          {"field": "properties.NAME", "type": "nominal", "title": "Country"},
+          {"field": "Infrastructure", "type": "quantitative"},
+          {"field": "Development", "type": "quantitative"}
+        ]
+      }
+    },
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/qqia0005/visualization-week9/main/ne_110m_graticules_30.json",
+        "format": {"type": "topojson", "feature": "ne_110m_graticules_30"}
+      },
+      "mark": {"type": "geoshape", "stroke": "lightgray", "strokeWidth": 0.5}
+    }
+  ],
+  "config": {}
+};
+    vegaEmbed("#vis", spec, {mode: "vega-lite"}).then(console.log).catch(console.warn);
+  </script>
+</body>
+</html>
